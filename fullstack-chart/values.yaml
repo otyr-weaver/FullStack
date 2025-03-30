@@ -1,0 +1,95 @@
+# Default values for fullstack-chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: nginx
+  pullPolicy: IfNotPresent
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+securityContext: {}
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+
+resources: {}
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+
+volumes: []
+volumeMounts: []
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# === Custom FullStack App Values ===
+
+frontend:
+  name: frontend
+  image: otyr/fullstack-frontend:latest
+  replicas: 1
+  containerPort: 3000
+  nodePort: 30001
+  serviceName: frontend-service
+
+backend:
+  name: backend
+  image: otyr/fullstack-backend:latest
+  replicas: 1
+  containerPort: 4000
+  nodePort: 32000
+  serviceName: backend-service
+  databaseUrl: "postgresql://postgres:postgres@db-service:5432/postgres?schema=public"
+
+database:
+  name: db
+  image: postgres:12
+  containerPort: 5432
+  serviceName: db-service
+  hostPath: /mnt/db-data
+  credentials:
+    user: postgres
+    password: postgres
+    dbName: postgres

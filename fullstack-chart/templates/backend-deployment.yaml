@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.backend.name }}
+spec:
+  replicas: {{ .Values.backend.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.backend.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.backend.name }}
+    spec:
+      initContainers:
+        - name: prisma-migrate
+          image: {{ .Values.backend.image }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              apt-get update && apt-get install -y postgresql-client && \
+              until pg_isready -h {{ .Values.database.serviceName }} -p 5432 -U postgres; do echo "Waiting for PostgreSQL..."; sleep 2; done && \
+              npm install -g prisma && \
+              prisma migrate deploy --schema=/backend/prisma/schema.prisma
+          env:
+            - name: DATABASE_URL
+              value: "{{ .Values.backend.databaseUrl }}"
+      containers:
+        - name: backend
+          image: {{ .Values.backend.image }}
+          ports:
+            - containerPort: 4000
+          env:
+            - name: DATABASE_URL
+              value: "{{ .Values.backend.databaseUrl }}"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.backend.serviceName }}
+spec:
+  type: NodePort
+  selector:
+    app: {{ .Values.backend.name }}
+  ports:
+    - protocol: TCP
+      port: 4000
+      targetPort: 4000
+      nodePort: {{ .Values.backend.nodePort }}

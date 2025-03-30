@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.database.name }}
+spec:
+  serviceName: {{ .Values.database.serviceName }}
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.database.name }}
+  template:
+    metadata:
+      labels: 
+        app: {{ .Values.database.name }}
+    spec:
+      containers:
+        - name: db
+          image: {{ .Values.database.image }}
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              value: "{{ .Values.database.user }}"
+            - name: POSTGRES_PASSWORD
+              value: "{{ .Values.database.password }}"
+            - name: POSTGRES_DB
+              value: "{{ .Values.database.dbname }}"
+          volumeMounts:
+            - name: db-storage
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: db-storage
+          hostPath:
+            path: {{ .Values.database.hostPath }}
+            type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.database.serviceName }}
+spec:
+  selector:
+    app: {{ .Values.database.name }}
+  ports:
+    - port: 5432
+      targetPort: 5432
+  type: ClusterIP
