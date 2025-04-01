@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ .Values.database.name }}
-  namespace: argocd
 spec:
   serviceName: {{ .Values.database.serviceName }}
   replicas: 1
@@ -39,7 +38,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ .Values.database.serviceName }}
-  namespace: argocd
 spec:
   selector:
     app: {{ .Values.database.name }}
