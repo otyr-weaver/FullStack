@@ -1,6 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
+<<<<<<< HEAD
   name: user-management
 spec:
   destination:
@@ -14,3 +15,19 @@ spec:
     automated:
       prune: true
       selfHeal: true
+=======
+  name: user-management-demo
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: fullstack-chart
+    path: fullstack-chart
+    repoURL: https://github.com/otyr-weaver/FullStack.git
+    targetRevision: HEAD
+    helm:
+      releaseName: fullstack-chart
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: demo
+>>>>>>> a8258eca (Saving my local changes before rebase)

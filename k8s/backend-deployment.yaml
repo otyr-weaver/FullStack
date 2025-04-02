@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: argocd
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      initContainers:
+        - name: prisma-migrate
+          image: otyr/fullstack-backend:latest  # Use a Node.js image to run Prisma
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              # Wait for the database to be ready
+              apt-get update && apt-get install -y postgresql-client && \
+              until pg_isready -h db-service -p 5432 -U postgres; do echo "Waiting for PostgreSQL..."; sleep 2; done && \
+              npm install -g prisma && \
+              prisma migrate deploy --schema=/backend/prisma/schema.prisma  # Should work without hostPath
+          env:
+            - name: DATABASE_URL
+              value: "postgresql://postgres:postgres@db-service:5432/postgres?schema=public"
+      
+      containers:
+        - name: backend
+          image: otyr/fullstack-backend:latest  # Your pre-built container image
+          ports:
+            - containerPort: 4000
+          env:
+            - name: DATABASE_URL
+              value: "postgresql://postgres:postgres@db-service:5432/postgres?schema=public"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  namespace: argocd
+spec:
+  type: NodePort
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      port: 4000        # Inside the cluster
+      targetPort: 4000   # Backend container port
+      nodePort: 32000    # Exposed on the node
