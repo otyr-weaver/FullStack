@@ -4,14 +4,21 @@ metadata:
   name: user-management-demo
   namespace: argocd
 spec:
-  project: default
-  source:
-    chart: fullstack-chart
-    path: fullstack-chart
-    repoURL: https://github.com/otyr-weaver/FullStack.git
-    targetRevision: HEAD
-    helm:
-      releaseName: fullstack-chart
   destination:
-    server: "https://kubernetes.default.svc"
     namespace: demo
+    server: https://kubernetes.default.svc
+  source:
+    path: fullstack-chart-0.1.0.tgz
+    repoURL: https://github.com/otyr-weaver/FullStack
+    targetRevision: HEAD
+  sources: []
+  project: default
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+
+  
+ 
+  
+
