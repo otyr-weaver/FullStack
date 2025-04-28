@@ -7,7 +7,7 @@ replicaCount: 1
 image:
   repository: nginx
   pullPolicy: IfNotPresent
-  tag: "8405876"
+  tag: "4947f97"
 
 imagePullSecrets: []
 nameOverride: ""
