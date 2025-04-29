@@ -16,7 +16,10 @@ spec:
         - name: frontend
           image: {{ .Values.frontend.image }}
           ports:
-            - containerPort: 3000
+            - containerPort: {{ .Values.frontend.containerPort }}
+          env:
+            - name: PORT
+              value: "{{ .Values.frontend.containerPort }}"
 ---
 apiVersion: v1
 kind: Service
@@ -26,7 +29,7 @@ spec:
   selector:
     app: {{ .Values.frontend.name }}
   ports:
-    - port: 3000
-      targetPort: 3000
+    - port: {{ .Values.frontend.containerPort }}
+      targetPort: {{ .Values.frontend.containerPort }}
       nodePort: {{ .Values.frontend.nodePort }}
   type: NodePort

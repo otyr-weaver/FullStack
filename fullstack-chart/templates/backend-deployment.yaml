@@ -29,8 +29,10 @@ spec:
         - name: backend
           image: {{ .Values.backend.image }}
           ports:
-            - containerPort: 4000
+            - containerPort: {{ .Values.backend.containerPort }}
           env:
+            - name: PORT
+              value: "{{ .Values.backend.containerPort }}"
             - name: DATABASE_URL
               value: "{{ .Values.backend.databaseUrl }}"
 ---
@@ -44,6 +46,6 @@ spec:
     app: {{ .Values.backend.name }}
   ports:
     - protocol: TCP
-      port: 4000
-      targetPort: 4000
+      port: {{ .Values.backend.containerPort }}
+      targetPort: {{ .Values.backend.containerPort }}
       nodePort: {{ .Values.backend.nodePort }}
