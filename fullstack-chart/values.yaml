@@ -7,7 +7,7 @@ replicaCount: 1
 image:
   repository: nginx
   pullPolicy: IfNotPresent
-  tag: "c99762d"
+  tag: "b04321a"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -68,7 +68,7 @@ affinity: {}
 
 frontend:
   name: frontend
-  image: otyr/fullstack-frontend:latest
+  image: 192.168.33.215:5000/front/frontend:b04321a
   replicas: 1
   containerPort: 3000
   nodePort: 30001
@@ -76,7 +76,7 @@ frontend:
 
 backend:
   name: backend
-  image: otyr/fullstack-backend:latest
+  image: 192.168.33.215:5000/back/backend:b04321a
   replicas: 1
   containerPort: 4000
   nodePort: 32000
