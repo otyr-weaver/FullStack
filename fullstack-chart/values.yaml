@@ -2,7 +2,7 @@
 
 frontend:
   name: frontend
-  image: 192.168.33.215:5000/front/frontend:4fda76f
+  image: 192.168.33.215:5000/front/frontend:26b2084
   replicas: 1
   containerPort: 3001
   nodePort: 30002
@@ -10,7 +10,7 @@ frontend:
 
 backend:
   name: backend
-  image: 192.168.33.215:5000/back/backend:4fda76f
+  image: 192.168.33.215:5000/back/backend:26b2084
   replicas: 1
   containerPort: 4001
   nodePort: 32001
